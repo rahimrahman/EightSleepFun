@@ -1,5 +1,6 @@
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { colors } from "../common/constants";
 
 type AvatarProps = {
   user: string;
@@ -32,7 +33,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         styles.container,
         styles.imageSize,
         {
-          borderColor: isSelected ? "#1911f5" : "white",
+          borderColor: isSelected ? colors.primaryBlue : "white",
         },
       ]}
       testID={"Avatar-Button"}>

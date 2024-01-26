@@ -19,7 +19,7 @@ export type BedAndRoomTemperatureChartData = {
   temperatureBedFahrenheit: number;
 };
 type BedAndRoomTemperatureChartProps = {
-  chartData: BedAndRoomTemperatureChartData[];
+  chartData: BedAndRoomTemperatureChartData[] | [];
 };
 
 export const BedAndRoomTemperatureChart: React.FC<

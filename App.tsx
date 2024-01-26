@@ -1,25 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 
 import {
   BedAndRoomTemperatureChart,
+  Days,
   Header,
+  HeartRateChart,
   Users,
+  RespiratoryRateChart,
 } from "./src/components/sleepReport";
 import { useGetData } from "./src/hooks/useGetData";
 import { useParseData } from "./src/hooks/useParseData";
-import { RespiratoryRateChart } from "./src/components/sleepReport/RespiratoryRateChart";
-import { HeartRateChart } from "./src/components/sleepReport/HeartRateChart";
 
 function App(): React.JSX.Element {
-  const [selectedUser, setSelectedUser] = React.useState("rahim");
-
+  const [selectedUser, setSelectedUser] = useState("rahim");
+  const [selectedInterval, setSelectedInterval] = useState<number>(0);
   const [data] = useGetData(selectedUser);
   const [
     bedAndRoomTemperatureChartData,
     respiratoryRateChartData,
     heartRateChartData,
-  ] = useParseData(data);
+    dataGroup,
+  ] = useParseData(data, selectedInterval);
 
   return (
     <ScrollView
@@ -27,6 +29,8 @@ function App(): React.JSX.Element {
       style={styles.darkBackground}>
       <Header />
       <Users onPress={setSelectedUser} />
+
+      <Days dataGroup={dataGroup} onPress={setSelectedInterval} />
 
       <BedAndRoomTemperatureChart chartData={bedAndRoomTemperatureChartData} />
 

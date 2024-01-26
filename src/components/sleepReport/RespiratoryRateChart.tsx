@@ -8,7 +8,6 @@ import inter from "../../../assets/fonts/Inter-Medium.ttf";
 
 export type RespiratoryRateChartData = {
   xKey: number;
-  xAxisLabel: string;
   respiratoryHeartRate: number;
 };
 type RespiratoryRateChartProps = {

@@ -1,21 +1,56 @@
 import React, { useEffect, useState } from "react";
-import { BedAndRoomTemperatureChartData } from "../components/sleepReport";
+import {
+  BedAndRoomTemperatureChartData,
+  RespiratoryRateChartData,
+  HeartRateChartData,
+  DataGroup,
+} from "../components/sleepReport";
 import { celsiusToFahrenheit, hoursDisplay } from "../common/helpers";
-import { RespiratoryRateChartData } from "../components/sleepReport/RespiratoryRateChart";
-import { HeartRateChartData } from "../components/sleepReport/HeartRateChart";
 
-export const useParseData = (data: unknown = { intervals: [] }) => {
+export const useParseData = (
+  data: unknown = { intervals: [] },
+  selectedInterval: number | undefined
+) => {
   const [bedAndRoomTemperatureChartData, setBedAndRoomTemperatureChartData] =
-    useState([]);
-  const [respiratoryRateChartData, setRespiratoryRatechartData] = useState([]);
-  const [heartRateChartData, setHeartRateChartData] = useState([]);
+    useState<BedAndRoomTemperatureChartData[] | []>([]);
+
+  const [respiratoryRateChartData, setRespiratoryRatechartData] = useState<
+    RespiratoryRateChartData[] | []
+  >([]);
+
+  const [heartRateChartData, setHeartRateChartData] = useState<
+    HeartRateChartData[] | []
+  >([]);
+
+  const [dataGroup, setDataGroup] = useState<DataGroup | {}>({});
 
   useEffect(() => {
     const { intervals } = data;
 
     if (intervals.length) {
-      const { tempRoomC, tempBedC, respiratoryRate, heartRate } =
-        intervals[0].timeseries;
+      const group: DataGroup = intervals.reduce(
+        (
+          acc: Record<number, any>,
+          { id, ts, score }: { id: number; ts: string; score: number },
+          index: number
+        ) => {
+          const dayOfTheWeek = new Date(ts).getDay();
+
+          acc[dayOfTheWeek] = {
+            index,
+            id,
+            score,
+          };
+
+          return acc;
+        },
+        {}
+      );
+
+      setDataGroup(group);
+
+      const { timeseries } = intervals[selectedInterval];
+      const { tempRoomC, tempBedC, respiratoryRate, heartRate } = timeseries;
 
       const bedAndRoomTemperatureData: BedAndRoomTemperatureChartData[] =
         tempRoomC.map(
@@ -37,7 +72,7 @@ export const useParseData = (data: unknown = { intervals: [] }) => {
 
       setBedAndRoomTemperatureChartData(bedAndRoomTemperatureData);
 
-      const respiratoryRateData: RespiratoryRateChartData = respiratoryRate.map(
+      const respiratoryRateData = respiratoryRate.map(
         ([datetime, value]: [datetime: string, temperature: number]) => ({
           xKey: hoursDisplay(datetime as string),
           respiratoryHeartRate: value,
@@ -46,11 +81,10 @@ export const useParseData = (data: unknown = { intervals: [] }) => {
 
       setRespiratoryRatechartData(respiratoryRateData);
 
-      const heartRateData: HeartRateChartData = heartRate.map(
+      const heartRateData = heartRate.map(
         ([datetime, value]: [datetime: string, temperature: number]) => {
           return {
             xKey: hoursDisplay(datetime as string),
-            xAxisLabel: datetime as string,
             heartRate: value,
           };
         }
@@ -58,11 +92,12 @@ export const useParseData = (data: unknown = { intervals: [] }) => {
 
       setHeartRateChartData(heartRateData);
     }
-  }, [data, setBedAndRoomTemperatureChartData]);
+  }, [data, selectedInterval, setBedAndRoomTemperatureChartData]);
 
   return [
     bedAndRoomTemperatureChartData,
     respiratoryRateChartData,
     heartRateChartData,
+    dataGroup,
   ];
 };
