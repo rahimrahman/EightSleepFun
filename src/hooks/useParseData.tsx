@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { BedAndRoomTemperatureChartData } from "../components/sleepReport";
 import { celsiusToFahrenheit, hoursDisplay } from "../common/helpers";
+import { RespiratoryRateChartData } from "../components/sleepReport/RespiratoryRateChart";
+import { HeartRateChartData } from "../components/sleepReport/HeartRateChart";
 
 export const useParseData = (data: unknown = { intervals: [] }) => {
   const [bedAndRoomTemperatureChartData, setBedAndRoomTemperatureChartData] =
     useState([]);
   const [respiratoryRateChartData, setRespiratoryRatechartData] = useState([]);
+  const [heartRateChartData, setHeartRateChartData] = useState([]);
 
   useEffect(() => {
     const { intervals } = data;
 
     if (intervals.length) {
-      const { tempRoomC, tempBedC, respiratoryRate } = intervals[0].timeseries;
+      const { tempRoomC, tempBedC, respiratoryRate, heartRate } =
+        intervals[0].timeseries;
 
-      const bedAndRoomTemperature: BedAndRoomTemperatureChartData[] =
+      const bedAndRoomTemperatureData: BedAndRoomTemperatureChartData[] =
         tempRoomC.map(
           (
             [datetime, temperature]: [datetime: string, temperature: number],
@@ -31,24 +35,34 @@ export const useParseData = (data: unknown = { intervals: [] }) => {
           })
         );
 
-      setBedAndRoomTemperatureChartData(bedAndRoomTemperature);
+      setBedAndRoomTemperatureChartData(bedAndRoomTemperatureData);
 
-      const respiratoryRateData = respiratoryRate.map(
-        (
-          [datetime, value]: [datetime: string, temperature: number],
-          index: number
-        ) => {
+      const respiratoryRateData: RespiratoryRateChartData = respiratoryRate.map(
+        ([datetime, value]: [datetime: string, temperature: number]) => ({
+          xKey: hoursDisplay(datetime as string),
+          respiratoryHeartRate: value,
+        })
+      );
+
+      setRespiratoryRatechartData(respiratoryRateData);
+
+      const heartRateData: HeartRateChartData = heartRate.map(
+        ([datetime, value]: [datetime: string, temperature: number]) => {
           return {
             xKey: hoursDisplay(datetime as string),
             xAxisLabel: datetime as string,
-            respiratoryHeartRate: value,
+            heartRate: value,
           };
         }
       );
 
-      setRespiratoryRatechartData(respiratoryRateData);
+      setHeartRateChartData(heartRateData);
     }
   }, [data, setBedAndRoomTemperatureChartData]);
 
-  return [bedAndRoomTemperatureChartData, respiratoryRateChartData];
+  return [
+    bedAndRoomTemperatureChartData,
+    respiratoryRateChartData,
+    heartRateChartData,
+  ];
 };

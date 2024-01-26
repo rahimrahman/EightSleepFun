@@ -6,41 +6,39 @@ import { ToolTip } from "./ToolTip";
 import { ChartWrapper } from "./ChartWrapper";
 import inter from "../../../assets/fonts/Inter-Medium.ttf";
 
-export type RespiratoryRateChartData = {
+export type HeartRateChartData = {
   xKey: number;
-  xAxisLabel: string;
-  respiratoryHeartRate: number;
+  heartRate: number;
 };
-type RespiratoryRateChartProps = {
-  chartData: RespiratoryRateChartData[];
+type HeartRateChartProps = {
+  chartData: HeartRateChartData[];
 };
 
 const INIT_STATE = {
   x: 0,
-  y: { respiratoryHeartRate: 0 },
+  y: { heartRate: 0 },
 };
 
-export const RespiratoryRateChart: React.FC<RespiratoryRateChartProps> = ({
+export const HeartRateChart: React.FC<HeartRateChartProps> = ({
   chartData,
 }) => {
   if (!chartData.length) {
     return null;
   }
-
   const font = useFont(inter, 14);
   const { state, isActive } = useChartPressState(INIT_STATE);
 
   return (
-    <ChartWrapper title={"Respiratory Rate"}>
+    <ChartWrapper title="Heart Rate">
       <CartesianChart
         data={chartData}
         xKey="xKey"
-        yKeys={["respiratoryHeartRate"]}
+        yKeys={["heartRate"]}
         chartPressState={state}
         axisOptions={{
           tickCount: {
-            x: 2,
-            y: 2,
+            x: 3,
+            y: 5,
           },
           font,
           lineColor: "#525252",
@@ -53,19 +51,15 @@ export const RespiratoryRateChart: React.FC<RespiratoryRateChartProps> = ({
         {({ points }) => (
           <>
             <Line
-              points={points.respiratoryHeartRate}
+              points={points.heartRate}
               color="white"
-              strokeWidth={3}
-              // curveType="natural"
+              strokeWidth={2}
               connectMissingData
               animate={{ type: "timing", duration: 300 }}
             />
             {isActive ? (
               <>
-                <ToolTip
-                  x={state.x.position}
-                  y={state.y.respiratoryHeartRate.position}
-                />
+                <ToolTip x={state.x.position} y={state.y.heartRate.position} />
               </>
             ) : null}
           </>

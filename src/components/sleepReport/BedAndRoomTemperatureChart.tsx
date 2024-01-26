@@ -25,7 +25,6 @@ type BedAndRoomTemperatureChartProps = {
 export const BedAndRoomTemperatureChart: React.FC<
   BedAndRoomTemperatureChartProps
 > = ({ chartData }) => {
-  console.log({ chartData });
   if (!chartData.length) {
     return null;
   }
