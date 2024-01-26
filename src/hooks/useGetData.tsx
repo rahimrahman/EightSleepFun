@@ -8,7 +8,7 @@ const USER_URL_MAP: Record<string, string> = {
 };
 
 export const useGetData = (user: string) => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState<{ intervals: [] }>({ intervals: [] });
   const currentUser = useRef("");
 
   useEffect(() => {
