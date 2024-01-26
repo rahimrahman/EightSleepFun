@@ -1,11 +1,17 @@
-import React, { useEffect, useRef } from "react";
-import { ScrollView, StyleSheet, useColorScheme, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-import { Header } from "./src/components/sleepReport/Header";
-import { Users } from "./src/components/sleepReport/Users";
+import { Header, Users } from "./src/components/sleepReport";
+import { useGetData } from "./src/hooks/useGetData";
 
 function App(): React.JSX.Element {
   const [selectedUser, setSelectedUser] = React.useState("rahim");
+
+  const [data] = useGetData(selectedUser);
+
+  useEffect(() => {
+    console.log({ data });
+  }, [data]);
 
   return (
     <ScrollView
