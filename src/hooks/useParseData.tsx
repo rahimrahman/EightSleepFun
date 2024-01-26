@@ -5,12 +5,13 @@ import { celsiusToFahrenheit, hoursDisplay } from "../common/helpers";
 export const useParseData = (data: unknown = { intervals: [] }) => {
   const [bedAndRoomTemperatureChartData, setBedAndRoomTemperatureChartData] =
     useState([]);
+  const [respiratoryRateChartData, setRespiratoryRatechartData] = useState([]);
 
   useEffect(() => {
     const { intervals } = data;
 
     if (intervals.length) {
-      const { tempRoomC, tempBedC } = intervals[0].timeseries;
+      const { tempRoomC, tempBedC, respiratoryRate } = intervals[0].timeseries;
 
       const bedAndRoomTemperature: BedAndRoomTemperatureChartData[] =
         tempRoomC.map(
@@ -31,8 +32,23 @@ export const useParseData = (data: unknown = { intervals: [] }) => {
         );
 
       setBedAndRoomTemperatureChartData(bedAndRoomTemperature);
+
+      const respiratoryRateData = respiratoryRate.map(
+        (
+          [datetime, value]: [datetime: string, temperature: number],
+          index: number
+        ) => {
+          return {
+            xKey: hoursDisplay(datetime as string),
+            xAxisLabel: datetime as string,
+            respiratoryHeartRate: value,
+          };
+        }
+      );
+
+      setRespiratoryRatechartData(respiratoryRateData);
     }
   }, [data, setBedAndRoomTemperatureChartData]);
 
-  return [bedAndRoomTemperatureChartData];
+  return [bedAndRoomTemperatureChartData, respiratoryRateChartData];
 };

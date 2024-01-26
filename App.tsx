@@ -10,12 +10,14 @@ import {
 import { useGetData } from "./src/hooks/useGetData";
 import { celsiusToFahrenheit, hoursDisplay } from "./src/common/helpers";
 import { useParseData } from "./src/hooks/useParseData";
+import { RespiratoryRateChart } from "./src/components/sleepReport/RespiratoryRateChart";
 
 function App(): React.JSX.Element {
   const [selectedUser, setSelectedUser] = React.useState("rahim");
 
   const [data] = useGetData(selectedUser);
-  const [bedAndRoomTemperatureChartData] = useParseData(data);
+  const [bedAndRoomTemperatureChartData, respiratoryRateChartData] =
+    useParseData(data);
 
   return (
     <ScrollView
@@ -28,6 +30,8 @@ function App(): React.JSX.Element {
         <BedAndRoomTemperatureChart
           chartData={bedAndRoomTemperatureChartData}
         />
+
+        <RespiratoryRateChart chartData={respiratoryRateChartData} />
       </View>
     </ScrollView>
   );
