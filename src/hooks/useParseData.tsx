@@ -6,34 +6,31 @@ import {
   DataGroup,
 } from "../components/sleepReport";
 import { celsiusToFahrenheit, hoursDisplay } from "../common/helpers";
+import { ResponseData } from "./useGetData";
 
 export const useParseData = (
-  data: unknown = { intervals: [] },
-  selectedInterval: number | undefined
+  data: ResponseData = { intervals: [] },
+  selectedInterval: number
 ) => {
   const [bedAndRoomTemperatureChartData, setBedAndRoomTemperatureChartData] =
-    useState<BedAndRoomTemperatureChartData[] | []>([]);
+    useState<BedAndRoomTemperatureChartData[]>([]);
 
   const [respiratoryRateChartData, setRespiratoryRatechartData] = useState<
-    RespiratoryRateChartData[] | []
+    RespiratoryRateChartData[]
   >([]);
 
   const [heartRateChartData, setHeartRateChartData] = useState<
-    HeartRateChartData[] | []
+    HeartRateChartData[]
   >([]);
 
-  const [dataGroup, setDataGroup] = useState<DataGroup | {}>({});
+  const [dataGroup, setDataGroup] = useState<DataGroup>({});
 
   useEffect(() => {
     const { intervals } = data;
 
     if (intervals.length) {
       const group: DataGroup = intervals.reduce(
-        (
-          acc: Record<number, any>,
-          { id, ts, score }: { id: number; ts: string; score: number },
-          index: number
-        ) => {
+        (acc: Record<number, any>, { id, ts, score }, index: number) => {
           const dayOfTheWeek = new Date(ts).getDay();
 
           acc[dayOfTheWeek] = {
@@ -72,23 +69,19 @@ export const useParseData = (
 
       setBedAndRoomTemperatureChartData(bedAndRoomTemperatureData);
 
-      const respiratoryRateData = respiratoryRate.map(
-        ([datetime, value]: [datetime: string, temperature: number]) => ({
-          xKey: hoursDisplay(datetime as string),
-          respiratoryHeartRate: value,
-        })
-      );
+      const respiratoryRateData = respiratoryRate.map(([datetime, value]) => ({
+        xKey: hoursDisplay(datetime),
+        respiratoryHeartRate: value,
+      }));
 
       setRespiratoryRatechartData(respiratoryRateData);
 
-      const heartRateData = heartRate.map(
-        ([datetime, value]: [datetime: string, temperature: number]) => {
-          return {
-            xKey: hoursDisplay(datetime as string),
-            heartRate: value,
-          };
-        }
-      );
+      const heartRateData = heartRate.map(([datetime, value]) => {
+        return {
+          xKey: hoursDisplay(datetime),
+          heartRate: value,
+        };
+      });
 
       setHeartRateChartData(heartRateData);
     }
@@ -99,5 +92,10 @@ export const useParseData = (
     respiratoryRateChartData,
     heartRateChartData,
     dataGroup,
+  ] as [
+    BedAndRoomTemperatureChartData[],
+    RespiratoryRateChartData[],
+    HeartRateChartData[],
+    DataGroup
   ];
 };

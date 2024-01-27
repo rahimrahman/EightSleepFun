@@ -7,8 +7,33 @@ const USER_URL_MAP: Record<string, string> = {
   zane: "https://s3.amazonaws.com/eight-public/challenge/f9bf229fd19e4c799e8c19a962d73449.json",
 };
 
+type TimeSeries = {
+  tnt: [string, number][];
+  tempRoomC: [string, number][];
+  tempBedC: [string, number][];
+  respiratoryRate: [string, number][];
+  heartRate: [string, number][];
+};
+
+type Stage = {
+  stage: "awake" | "out" | "light" | "deep";
+  duration: number;
+};
+
+type Interval = {
+  id: string;
+  ts: string;
+  stages: Stage[];
+  score: number;
+  timeseries: TimeSeries;
+};
+
+export type ResponseData = {
+  intervals: Interval[];
+};
+
 export const useGetData = (user: string) => {
-  const [data, setData] = useState<{ intervals: [] }>({ intervals: [] });
+  const [data, setData] = useState<ResponseData>({ intervals: [] });
   const currentUser = useRef("");
 
   useEffect(() => {
@@ -27,5 +52,36 @@ export const useGetData = (user: string) => {
     getData();
   }, [user]);
 
-  return [data];
+  return [data] as [ResponseData];
+};
+
+const sampleData: Interval = {
+  id: "1",
+  ts: "2017-02-28T05:10:00.000Z",
+  stages: [
+    {
+      stage: "awake",
+      duration: 1024,
+    },
+  ],
+  score: 93,
+  timeseries: {
+    tnt: [["2017-02-28T06:20:00.000Z", 1]],
+    tempRoomC: [
+      // ambient room temperature, in celsius
+      ["2017-02-28T05:00:00.000Z", 19.787400000000005],
+    ],
+    tempBedC: [
+      // bed temperature, celsius
+      ["2017-02-28T05:00:00.000Z", 34.151399999999995],
+    ],
+    respiratoryRate: [
+      // measured in "breaths per minute"
+      ["2017-02-28T05:00:00.000Z", 16.666666666666668],
+    ],
+    heartRate: [
+      // measured in "beats per minute"
+      ["2017-02-28T05:00:00.000Z", 48],
+    ],
+  },
 };

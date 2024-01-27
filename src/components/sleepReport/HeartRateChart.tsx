@@ -7,7 +7,7 @@ import { ChartWrapper } from "./ChartWrapper";
 import inter from "../../../assets/fonts/Inter-Medium.ttf";
 
 export type HeartRateChartData = {
-  xKey: number;
+  xKey: string;
   heartRate: number;
 };
 type HeartRateChartProps = {
