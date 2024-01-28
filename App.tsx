@@ -11,17 +11,44 @@ import {
 } from "./src/components/sleepReport";
 import { useGetData } from "./src/hooks/useGetData";
 import { useParseData } from "./src/hooks/useParseData";
+import { SleepScore } from "./src/components/sleepReport/SleepScore";
 
 function App(): React.JSX.Element {
   const [selectedUser, setSelectedUser] = useState("rahim");
+
   const [selectedInterval, setSelectedInterval] = useState<number>(0);
+  const [sleepScore, setSleepScore] = useState(0);
+
+  const [selectedDayOfWeek, setSelectedDayOfWeek] = useState<
+    number | undefined
+  >();
+
   const [data] = useGetData(selectedUser);
   const [
     bedAndRoomTemperatureChartData,
     respiratoryRateChartData,
     heartRateChartData,
-    dataGroup,
+    dayOfWeekSummaryData,
   ] = useParseData(data, selectedInterval);
+
+  React.useEffect(() => {
+    if (selectedDayOfWeek) {
+      const { score, index } = dayOfWeekSummaryData[selectedDayOfWeek];
+
+      setSleepScore(score);
+      setSelectedInterval(index);
+    } else {
+      const dayOfWeekSummaryDataKeys = Object.keys(dayOfWeekSummaryData);
+
+      if (dayOfWeekSummaryDataKeys.length) {
+        const lastInTheList =
+          dayOfWeekSummaryDataKeys[dayOfWeekSummaryDataKeys.length - 1];
+        const { score, index } = dayOfWeekSummaryData[lastInTheList];
+        setSleepScore(score);
+        setSelectedInterval(index);
+      }
+    }
+  }, [dayOfWeekSummaryData, selectedDayOfWeek]);
 
   return (
     <ScrollView
@@ -30,7 +57,9 @@ function App(): React.JSX.Element {
       <Header />
       <Users onPress={setSelectedUser} />
 
-      <Days dataGroup={dataGroup} onPress={setSelectedInterval} />
+      <Days data={dayOfWeekSummaryData} onPress={setSelectedDayOfWeek} />
+
+      <SleepScore score={sleepScore} />
 
       <BedAndRoomTemperatureChart chartData={bedAndRoomTemperatureChartData} />
 

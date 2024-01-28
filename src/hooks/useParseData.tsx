@@ -3,14 +3,15 @@ import {
   BedAndRoomTemperatureChartData,
   RespiratoryRateChartData,
   HeartRateChartData,
-  DataGroup,
+  DayOfWeekSummaryData,
+  DayOfWeekData,
 } from "../components/sleepReport";
 import { celsiusToFahrenheit, hoursDisplay } from "../common/helpers";
 import { ResponseData } from "./useGetData";
 
 export const useParseData = (
   data: ResponseData = { intervals: [] },
-  selectedInterval: number
+  selectedIntervalIndex: number
 ) => {
   const [bedAndRoomTemperatureChartData, setBedAndRoomTemperatureChartData] =
     useState<BedAndRoomTemperatureChartData[]>([]);
@@ -23,15 +24,24 @@ export const useParseData = (
     HeartRateChartData[]
   >([]);
 
-  const [dataGroup, setDataGroup] = useState<DataGroup>({});
+  const [dayOfWeekSummaryData, setDayOfWeekSummaryData] =
+    useState<DayOfWeekSummaryData>({});
+
+  const [internalIntervalIndex, setInternalIntervalIndex] = useState(0);
+
+  useEffect(() => {
+    if (typeof selectedIntervalIndex === "number") {
+      setInternalIntervalIndex(selectedIntervalIndex);
+    }
+  }, [selectedIntervalIndex]);
 
   useEffect(() => {
     const { intervals } = data;
 
     if (intervals.length) {
-      const group: DataGroup = intervals.reduce(
+      const dayOfWeekSummary: DayOfWeekSummaryData = intervals.reduce(
         (acc: Record<number, any>, { id, ts, score }, index: number) => {
-          const dayOfTheWeek = new Date(ts).getDay();
+          const dayOfTheWeek = new Date(ts).getUTCDay();
 
           acc[dayOfTheWeek] = {
             index,
@@ -44,9 +54,17 @@ export const useParseData = (
         {}
       );
 
-      setDataGroup(group);
+      setDayOfWeekSummaryData(dayOfWeekSummary);
+      // when we switch to new user, reset to the last day of the week, thus setting for last interval
+      setInternalIntervalIndex(intervals.length - 1);
+    }
+  }, [data]);
 
-      const { timeseries } = intervals[selectedInterval];
+  useEffect(() => {
+    const { intervals } = data;
+
+    if (intervals.length) {
+      const { timeseries } = intervals[internalIntervalIndex];
       const { tempRoomC, tempBedC, respiratoryRate, heartRate } = timeseries;
 
       const bedAndRoomTemperatureData: BedAndRoomTemperatureChartData[] =
@@ -85,17 +103,17 @@ export const useParseData = (
 
       setHeartRateChartData(heartRateData);
     }
-  }, [data, selectedInterval, setBedAndRoomTemperatureChartData]);
+  }, [data, internalIntervalIndex]);
 
   return [
     bedAndRoomTemperatureChartData,
     respiratoryRateChartData,
     heartRateChartData,
-    dataGroup,
+    dayOfWeekSummaryData,
   ] as [
     BedAndRoomTemperatureChartData[],
     RespiratoryRateChartData[],
     HeartRateChartData[],
-    DataGroup
+    DayOfWeekSummaryData
   ];
 };

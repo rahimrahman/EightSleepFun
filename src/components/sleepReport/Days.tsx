@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colors } from "../../common/constants";
+import { CircularProgressBar } from "../CircularProgressBar";
 
 export type DataGroup = {
   [key: string]: {
@@ -9,31 +9,43 @@ export type DataGroup = {
     score: number;
   };
 };
+
+export type DayOfWeekData = {
+  id: string;
+  index: number;
+  score: number;
+};
+
+export type DayOfWeekSummaryData = {
+  [dayOfWeek: string]: DayOfWeekData;
+};
+
 type DaysProps = {
-  dataGroup: DataGroup;
+  data: DayOfWeekSummaryData;
   onPress: (i: number) => void;
 };
 
 const DAYS_MAP = ["S", "M", "T", "W", "R", "F", "S"];
 
-export const Days: FC<DaysProps> = ({ dataGroup, onPress }) => {
+export const Days: FC<DaysProps> = ({ data, onPress }) => {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const onDayPress = (index: number | undefined) => {
-    if (typeof index === "number" && index >= 0) {
-      onPress(index);
-      setSelectedDayIndex(index);
+  const onDayPress = (dayOfWeek: number | undefined) => {
+    if (dayOfWeek) {
+      const intervalIndex = data[dayOfWeek].index;
+      setSelectedDayIndex(intervalIndex);
+      onPress(dayOfWeek);
     }
   };
 
   return (
     <View style={styles.container}>
-      {[...Array(7)].map((_e, i: number) => (
+      {DAYS_MAP.map((day, i: number) => (
         <Day
           key={i}
-          title={DAYS_MAP[i]}
-          onPress={() => onDayPress(dataGroup[i]?.index)}
-          score={dataGroup[i]?.score}
-          isSelected={selectedDayIndex === dataGroup[i]?.index ? true : false}
+          title={day}
+          onPress={() => onDayPress(i)}
+          score={data[i]?.score}
+          isSelected={selectedDayIndex === data[i]?.index ? true : false}
         />
       ))}
     </View>
@@ -46,22 +58,22 @@ type DayProps = {
   isSelected: boolean;
   onPress: () => void;
 };
+
 const Day: FC<DayProps> = ({ title, score, isSelected = false, onPress }) => {
   return (
     <TouchableOpacity
-      style={[
-        styles.cell,
-        {
-          borderColor: isSelected
-            ? colors.primaryBlue
-            : score
-            ? "white"
-            : "#525252",
-        },
-      ]}
+      style={styles.daySquareDimension}
       onPress={onPress}
-      disabled={isSelected || score ? false : true}>
-      <Text style={styles.text}>{title}</Text>
+      disabled={score ? false : true}>
+      <CircularProgressBar
+        percentage={score || 0}
+        strokeWidth={2}
+        radius={20}
+        disabled={score ? false : true}
+      />
+      <View style={[styles.daySquareDimension, styles.textContainer]}>
+        <Text style={styles.text}>{title}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -74,12 +86,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 8,
   },
-  cell: {
+  daySquareDimension: {
     width: 40,
     height: 40,
-    borderColor: "white",
-    borderWidth: 2,
-    borderRadius: 20,
+  },
+  textContainer: {
+    position: "absolute",
     justifyContent: "center",
   },
   text: {
