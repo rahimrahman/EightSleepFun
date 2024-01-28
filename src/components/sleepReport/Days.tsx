@@ -40,17 +40,36 @@ export const Days: FC<DaysProps> = ({ data, onPress }) => {
   return (
     <View style={styles.container}>
       {DAYS_MAP.map((day, i: number) => (
-        <Day
-          key={i}
-          title={day}
-          onPress={() => onDayPress(i)}
-          score={data[i]?.score}
-          isSelected={selectedDayIndex === data[i]?.index ? true : false}
-        />
+        <View key={i} style={styles.dayContainer}>
+          <Day
+            title={day}
+            onPress={() => onDayPress(i)}
+            score={data[i]?.score}
+            isSelected={selectedDayIndex === data[i]?.index}
+          />
+          <SelectedIndicator isSelected={selectedDayIndex === data[i]?.index} />
+        </View>
       ))}
     </View>
   );
 };
+
+type SelectedIndicatorProps = {
+  isSelected: boolean;
+};
+const SelectedIndicator: FC<SelectedIndicatorProps> = ({
+  isSelected = false,
+}) => (
+  <View
+    style={[
+      styles.selectedIndicatorContainer,
+      {
+        borderColor: isSelected ? "white" : "black",
+        backgroundColor: isSelected ? "white" : "black",
+      },
+    ]}
+  />
+);
 
 type DayProps = {
   title: string;
@@ -98,5 +117,16 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     textAlignVertical: "center",
+  },
+  selectedIndicatorContainer: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+
+  dayContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 8,
   },
 });
