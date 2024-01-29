@@ -2,7 +2,6 @@ import { Group, Text, matchFont, vec } from "@shopify/react-native-skia";
 import React, { FC, useEffect } from "react";
 
 import {
-  SharedValue,
   useDerivedValue,
   useSharedValue,
   withTiming,

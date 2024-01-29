@@ -15,19 +15,19 @@ type RespiratoryRateChartProps = {
 };
 
 const INIT_STATE = {
-  x: 0,
+  x: "0",
   y: { respiratoryHeartRate: 0 },
 };
 
 export const RespiratoryRateChart: React.FC<RespiratoryRateChartProps> = ({
   chartData,
 }) => {
+  const font = useFont(inter, 14);
+  const { state, isActive } = useChartPressState(INIT_STATE);
+
   if (!chartData.length) {
     return null;
   }
-
-  const font = useFont(inter, 14);
-  const { state, isActive } = useChartPressState(INIT_STATE);
 
   return (
     <ChartWrapper title={"Respiratory Rate"}>

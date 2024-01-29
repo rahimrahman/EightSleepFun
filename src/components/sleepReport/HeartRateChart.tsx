@@ -15,18 +15,19 @@ type HeartRateChartProps = {
 };
 
 const INIT_STATE = {
-  x: 0,
+  x: "0",
   y: { heartRate: 0 },
 };
 
 export const HeartRateChart: React.FC<HeartRateChartProps> = ({
   chartData,
 }) => {
+  const font = useFont(inter, 14);
+  const { state, isActive } = useChartPressState(INIT_STATE);
+
   if (!chartData.length) {
     return null;
   }
-  const font = useFont(inter, 14);
-  const { state, isActive } = useChartPressState(INIT_STATE);
 
   return (
     <ChartWrapper title="Heart Rate">

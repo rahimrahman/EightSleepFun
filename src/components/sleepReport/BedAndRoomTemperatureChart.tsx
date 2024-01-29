@@ -25,11 +25,12 @@ type BedAndRoomTemperatureChartProps = {
 export const BedAndRoomTemperatureChart: React.FC<
   BedAndRoomTemperatureChartProps
 > = ({ chartData }) => {
+  const { state, isActive } = useChartPressState(INIT_STATE);
+  const font = useFont(inter, 14);
+
   if (!chartData.length) {
     return null;
   }
-  const { state, isActive } = useChartPressState(INIT_STATE);
-  const font = useFont(inter, 14);
 
   return (
     <ChartWrapper title="Room & Bed Temperature">
@@ -50,7 +51,6 @@ export const BedAndRoomTemperatureChart: React.FC<
             x: 8,
             y: 8,
           },
-          // labelPosition: "inset",
         }}>
         {({ points }) => (
           <>
