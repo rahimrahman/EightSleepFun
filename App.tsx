@@ -8,6 +8,7 @@ import {
   HeartRateChart,
   Users,
   RespiratoryRateChart,
+  SleepStagesChart,
 } from "./src/components/sleepReport";
 import { useGetData } from "./src/hooks/useGetData";
 import { useParseData } from "./src/hooks/useParseData";
@@ -25,6 +26,7 @@ function App(): React.JSX.Element {
 
   const [data] = useGetData(selectedUser);
   const [
+    sleepStagesChartData,
     bedAndRoomTemperatureChartData,
     respiratoryRateChartData,
     heartRateChartData,
@@ -60,6 +62,8 @@ function App(): React.JSX.Element {
       <Days data={dayOfWeekSummaryData} onPress={setSelectedDayOfWeek} />
 
       <SleepScore score={sleepScore} />
+
+      <SleepStagesChart chartData={sleepStagesChartData} />
 
       <BedAndRoomTemperatureChart chartData={bedAndRoomTemperatureChartData} />
 

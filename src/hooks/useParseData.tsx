@@ -1,18 +1,31 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BedAndRoomTemperatureChartData,
   RespiratoryRateChartData,
   HeartRateChartData,
   DayOfWeekSummaryData,
-  DayOfWeekData,
+  SleepStagesChartData,
 } from "../components/sleepReport";
 import { celsiusToFahrenheit, hoursDisplay } from "../common/helpers";
 import { ResponseData } from "./useGetData";
+import { Platform } from "react-native";
+
+const MILISECONDS_OFFSET = Platform.select({ ios: 1000, default: 1 });
+const STAGES_MAP = {
+  deep: 300000,
+  light: 200000,
+  awake: 100000,
+  out: 0,
+};
 
 export const useParseData = (
   data: ResponseData = { intervals: [] },
   selectedIntervalIndex: number
 ) => {
+  const [sleepStagesChartData, setSleepStagesChartData] = useState<
+    SleepStagesChartData[]
+  >([]);
+
   const [bedAndRoomTemperatureChartData, setBedAndRoomTemperatureChartData] =
     useState<BedAndRoomTemperatureChartData[]>([]);
 
@@ -64,7 +77,25 @@ export const useParseData = (
     const { intervals } = data;
 
     if (intervals.length) {
-      const { timeseries } = intervals[internalIntervalIndex];
+      const { timeseries, stages, ts } = intervals[internalIntervalIndex];
+
+      let lastDateTime = new Date(ts);
+      const stagesData = stages.map(({ stage, duration }) => {
+        lastDateTime = new Date(
+          lastDateTime.getTime() + duration * MILISECONDS_OFFSET
+        );
+
+        return {
+          xKey: hoursDisplay(lastDateTime.toString()),
+          value: STAGES_MAP[stage],
+        };
+      });
+
+      setSleepStagesChartData([
+        { xKey: hoursDisplay(ts), value: 0 },
+        ...stagesData,
+      ]);
+
       const { tempRoomC, tempBedC, respiratoryRate, heartRate } = timeseries;
 
       const bedAndRoomTemperatureData: BedAndRoomTemperatureChartData[] =
@@ -106,11 +137,13 @@ export const useParseData = (
   }, [data, internalIntervalIndex]);
 
   return [
+    sleepStagesChartData,
     bedAndRoomTemperatureChartData,
     respiratoryRateChartData,
     heartRateChartData,
     dayOfWeekSummaryData,
   ] as [
+    SleepStagesChartData[],
     BedAndRoomTemperatureChartData[],
     RespiratoryRateChartData[],
     HeartRateChartData[],
