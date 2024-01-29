@@ -8,7 +8,7 @@ export const hoursDisplay = (datetime: string) => new Date(datetime).toLocaleStr
   hour12: true,
 });
 
-export const defaultFontFamily = Platform.select({ ios: "Helvetica", default: "serif" });
+export const defaultFontFamily = Platform.select({ ios: "Helvetica", default: "helvetica" });
 
 export const getFontProperties = (fontSize: number, fontStyle: "normal" | "italic", fontWeight: string) => ({
   fontFamily: defaultFontFamily,
