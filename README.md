@@ -6,10 +6,7 @@
 https://github.com/rahimrahman/EightSleepFun/assets/5550094/063262fc-f477-40d3-b557-40d4f8d74d13
 
 
-
-
-https://github.com/rahimrahman/EightSleepFun/assets/5550094/95ce6be1-5832-4e32-b1cf-f166b17607fb
-
+https://github.com/rahimrahman/EightSleepFun/assets/5550094/ffa35c7d-26d8-48b2-99f8-ca9f3e325039
 
 
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
